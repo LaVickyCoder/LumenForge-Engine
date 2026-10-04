@@ -116,14 +116,19 @@ The API is pre-alpha and may change without compatibility guarantees. More selec
 
 ## Showcase media
 
-The repository is prepared for real screenshots and development captures in [media](media). Initial useful captures are:
+### Native Window Lifecycle
 
-- the native LumenForge window;
-- input/window lifecycle behavior where visually useful;
-- D3D12 adapter/device bootstrap output;
-- the first presented frame once swapchain/presentation is integrated and verified.
+The first native LumenForge window running on Windows 11:
 
-No fabricated renderer screenshots or mock feature claims are used here: visual material will represent running engine builds.
+![LumenForge native window](media/native_window.webp)
+
+### Direct3D 12 Validation
+
+The current D3D12 bootstrap validation passes all three targeted tests — WARP, DebugFirst and DebugLate:
+
+![LumenForge D3D12 tests passing](media/d3d12_q45.webp)
+
+These captures come from real engine builds. Future visual milestones will be added only after the corresponding capability is integrated and verified.
 
 ## Documentation
 

@@ -1,24 +1,28 @@
 # LumenForge Media
 
-This directory is reserved for **real captures from running LumenForge builds**.
+This directory contains **real captures from running LumenForge builds**.
 
-Planned categories:
+## Current screenshots
 
-```text
-media/
-├── screenshots/
-├── demos/
-├── diagrams/
-└── branding/
-```
+### Native Window Lifecycle
 
-Git does not retain empty directories, so the subdirectories will be created as real media is added.
+![LumenForge native window](native_window.webp)
 
-## First captures to add
+First native LumenForge window running on Windows 11.
 
-1. Native LumenForge window running on Windows 11.
-2. Input/window lifecycle demonstration if visually useful.
-3. D3D12 adapter/device bootstrap output.
-4. First swapchain/presented frame after that capability is integrated and verified.
+### Direct3D 12 Validation
+
+![LumenForge D3D12 tests passing](d3d12_q45.webp)
+
+The current D3D12 bootstrap validation shows:
+
+- `LumenForge.RHI.D3D12.WARP` — Passed
+- `LumenForge.RHI.D3D12.DebugFirst` — Passed
+- `LumenForge.RHI.D3D12.DebugLate` — Passed
+- 100% tests passed
+
+## Future media
+
+Additional screenshots and demos will be added only when the corresponding capability is integrated and verified. The next major visual target is the first presented D3D12 frame after swapchain/presentation integration.
 
 See [capture-guide.md](capture-guide.md).
