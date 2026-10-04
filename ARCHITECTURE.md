@@ -1,59 +1,94 @@
-# Architecture Overview
+# LumenForge Engine — Architecture Overview
 
-LumenForge is being built as a modular native engine with explicit subsystem boundaries and testable contracts.
+LumenForge is being developed as a modular native engine with explicit subsystem boundaries, failure contracts, and testable interfaces.
 
-## Current subsystem map
+## Current integrated architecture
 
-```text
-LumenForge
-├── Core
-├── Diagnostics
-├── Platform
-├── Time
-├── FileSystem
-├── Window
-├── Input
-├── Serialization
-└── RHI
-    └── Direct3D 12 bootstrap
+```mermaid
+flowchart LR
+    subgraph Foundation
+        Core
+        Diagnostics
+        Platform
+        Time
+        FileSystem
+    end
+
+    subgraph Runtime
+        Window
+        Input
+        Serialization
+    end
+
+    subgraph Graphics
+        RHI
+        D3D12["Direct3D 12"]
+    end
+
+    Window --> Platform
+    Window --> Core
+    Input --> Core
+    Serialization --> Core
+    Diagnostics --> Core
+    Platform --> Core
+    Time --> Core
+    FileSystem --> Core
+    RHI --> Core
+    RHI --> D3D12
 ```
 
-### Core
+## Core
 
-Foundational types and low-level utilities used by other engine systems, including result/error handling, views, hashing, UUID support, and shared contracts.
+The current Core layer provides foundational types and low-level contracts used by other systems, including fixed-size type aliases, explicit error/result handling, span/string-view utilities, hashing, UUID support, and input-event sink contracts.
 
-### Diagnostics
+## Diagnostics
 
-Assertion, fatal-error, and diagnostic foundations intended to make engine failures explicit and testable.
+Diagnostics establishes explicit assertion/failure behavior and diagnostic types rather than allowing subsystem failures to become implicit.
 
-### Platform
+## Platform
 
-Platform abstraction foundations, currently focused on Windows 11 x64 bring-up.
+The current bring-up target is Windows 11 x64. Platform-specific implementation is kept behind engine-facing contracts so later platform work does not need to leak directly into higher systems.
 
-### Time
+## Time and FileSystem
 
-High-resolution timing foundations and platform-specific time services.
+Time provides high-resolution platform timing. FileSystem provides the current native file-operation foundation. Both are low-level services intended to support higher runtime, asset and tool layers.
 
-### FileSystem
+## Window and Input
 
-Filesystem abstractions and Windows implementation work.
+The Window subsystem owns native lifecycle behavior and event pumping. Input consumes neutral events/state rather than making higher engine code depend directly on Win32 input representation.
 
-### Window and Input
+## Serialization
 
-Native window lifecycle, event pumping, focus/capture behavior, and input-state contracts.
+The current serialization work establishes versioned binary-reference encoding/decoding and migration foundations. It is a prerequisite for durable engine data evolution, not a claim of a complete asset or scene format.
 
-### Serialization
+## Render Hardware Interface
 
-Versioned binary serialization and migration foundations.
+The RHI introduces backend-neutral concepts such as backend identity, adapter identity/information, queue capabilities, device-creation descriptors, and explicit device-creation failure classes.
 
-### RHI
+The currently integrated concrete backend is Direct3D 12.
 
-Backend-neutral rendering contracts designed to keep higher engine layers independent from one graphics API. Current implementation work includes Direct3D 12 bootstrap.
+```mermaid
+flowchart TB
+    Higher["Future renderer / higher engine layers"]
+    RHI["LumenForge RHI"]
+    Adapter["Adapter discovery"]
+    Device["Device creation"]
+    D3D12["Direct3D 12 backend"]
+    Future["Future backend(s)"]
 
-## Design direction
+    Higher --> RHI
+    RHI --> Adapter
+    RHI --> Device
+    RHI --> D3D12
+    RHI -. possible future expansion .-> Future
+```
 
-The architecture is intentionally being developed in measured stages. Higher-level systems will be added only after lower-level contracts are sufficiently stable and testable.
+## Architectural principles visible today
 
-Long-term areas under consideration include resource management, rendering pipelines, scene/world systems, asset processing, editor tooling, animation, physics, audio, networking, profiling, and production build tooling.
+- **Explicit boundaries** — platform/backend-specific code is isolated behind engine contracts.
+- **Explicit failure** — operations use structured result/error paths instead of assuming success.
+- **Testability** — public contracts and negative paths are tested as milestones are integrated.
+- **Staged growth** — higher-level features are not claimed before the supporting low-level contracts exist.
+- **No premature stable ABI promise** — current APIs are pre-alpha and may change.
 
-These are roadmap directions, not current feature claims.
+See [docs/architecture/engine-layers.md](docs/architecture/engine-layers.md) for a layer-oriented view.
